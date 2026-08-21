@@ -63,6 +63,9 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
+      '@sanity/client':
+        specifier: ^8.2.0
+        version: 8.2.0
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.3.3
@@ -87,6 +90,9 @@ importers:
       tailwindcss:
         specifier: ^4
         version: 4.3.3
+      tsx:
+        specifier: ^4.23.12
+        version: 4.23.12
       typescript:
         specifier: ^5
         version: 5.9.3
