@@ -43,3 +43,11 @@ next-env.d.ts
 # sanity
 /dist
 .sanity/
+
+# keep the example env template tracked
+!.env.example
+
+# agent skill references (installed via `skills add`)
+/.agents
+/agent
+/.claude/skills
