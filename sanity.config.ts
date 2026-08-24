@@ -9,7 +9,7 @@ import {structure} from './src/sanity/structure'
 
 export default defineConfig({
   name: 'default',
-  title: 'FlightTracker',
+  title: 'Aloft',
   basePath: studioBasePath,
 
   projectId,

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FlightTracker",
+  title: "Aloft",
   description: "Search, book, and manage flights.",
 };
 

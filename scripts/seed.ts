@@ -1,6 +1,6 @@
 /**
  * Seeds airports, airlines, aircraft, flights, and support articles into the
- * FlightTracker dataset. Idempotent: every document has a deterministic _id
+ * Aloft dataset. Idempotent: every document has a deterministic _id
  * and is written with createOrReplace, so re-running is safe.
  *
  * Requires SANITY_API_WRITE_TOKEN. Run with:

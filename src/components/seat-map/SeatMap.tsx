@@ -99,7 +99,7 @@ export function SeatMap({
                           role="gridcell"
                           onClick={() => toggleSeat(seat.id, selectable)}
                           disabled={isOccupied || (!isSelected && selectedSet.size >= maxSeats)}
-                          aria-pressed={isSelected}
+                          aria-selected={isSelected}
                           aria-label={`Seat ${seat.id}, ${seat.isWindow ? 'window' : seat.isAisle ? 'aisle' : 'middle'}${seat.isExitRow ? ', exit row' : ''}, ${isOccupied ? 'occupied' : isSelected ? 'selected' : 'available'}`}
                           title={seat.id}
                           className={seatClasses({isOccupied, isSelected, isExitRow: seat.isExitRow, selectable})}
