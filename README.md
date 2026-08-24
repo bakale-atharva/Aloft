@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aloft
+
+A flight search and booking demo app built with Next.js, Sanity, and Clerk.
+
+## Stack
+
+- **Next.js 16** (App Router) + React 19
+- **Sanity** — content and booking data (flights, airports, airlines, aircraft, bookings)
+- **Clerk** — authentication and PRO billing/entitlements
+- **Tailwind CSS**
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Copy `.env.local` with your Sanity and Clerk credentials (project ID, dataset, API tokens, Clerk keys), then run the dev server:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) to see the app. The Sanity Studio is available at `/studio`.
 
-## Learn More
+## Seeding data
 
-To learn more about Next.js, take a look at the following resources:
+Seed airports, airlines, aircraft, flights, and support articles into your Sanity dataset:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm seed
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Requires `SANITY_API_WRITE_TOKEN` (Editor role) in `.env.local`. The seed script is idempotent and safe to re-run.
 
-## Deploy on Vercel
+## Other scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+pnpm build     # production build
+pnpm start     # run the production build
+pnpm lint      # lint the project
+pnpm typegen   # extract Sanity schema and generate types
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project structure
+
+- `src/app` — routes, including the `(site)` route group for the customer-facing app
+- `src/sanity` — Sanity client, schema types, and queries
+- `src/components` — UI components (search, seat map, checkout, bookings)
+- `src/lib` — pricing, PNR generation, seat map, and entitlement logic
+- `scripts/seed.ts` — dataset seed script
