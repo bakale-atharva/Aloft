@@ -2,8 +2,21 @@ import {client} from '@/sanity/client'
 import {AIRPORTS_QUERY} from '@/sanity/queries'
 import {SearchForm} from '@/components/search-form/SearchForm'
 
+type Airport = {_id: string; code: string; name: string; city: string; country: string}
+
+function isComplete(airport: {
+  _id: string
+  code: string | null
+  name: string | null
+  city: string | null
+  country: string | null
+}): airport is Airport {
+  return !!airport.code && !!airport.name && !!airport.city && !!airport.country
+}
+
 export default async function Home() {
-  const airports = await client.fetch(AIRPORTS_QUERY, {}, {next: {revalidate: 300}})
+  const rawAirports = await client.fetch(AIRPORTS_QUERY, {}, {next: {revalidate: 300}})
+  const airports = rawAirports.filter(isComplete)
 
   return (
     <div className="flex flex-1 flex-col">

@@ -6,7 +6,10 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 export default defineCliConfig({
   api: {projectId, dataset},
   studioHost: 'aloft',
-  autoUpdates: true,
+  deployment: {
+    appId: 'zby6baozpqlh0qhnf6f9ho9l',
+    autoUpdates: true,
+  },
   typegen: {
     enabled: true,
     path: './src/**/*.{ts,tsx}',

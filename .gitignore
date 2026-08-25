@@ -43,6 +43,8 @@ next-env.d.ts
 # sanity
 /dist
 .sanity/
+# typegen intermediate — regenerate with `pnpm typegen`; sanity.types.ts stays tracked
+/schema.json
 
 # keep the example env template tracked
 !.env.example
