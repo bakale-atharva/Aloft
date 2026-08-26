@@ -77,9 +77,10 @@ export function createAgentTools({userId}: {userId: string | null}) {
         cabinClass: z.enum(['economy', 'business', 'first']),
       }),
       execute: async ({flightId, cabinClass}) => {
+        // Seat occupancy changes as people book — never serve it from cache.
         const [flight, occupied] = await Promise.all([
           client.fetch<FlightResult | null>(FLIGHT_BY_ID_QUERY, {id: flightId}),
-          client.fetch<string[]>(OCCUPIED_SEATS_QUERY, {flightId}),
+          client.fetch<string[]>(OCCUPIED_SEATS_QUERY, {flightId}, {cache: 'no-store'}),
         ])
         if (!flight) return {error: 'Flight not found'}
 
@@ -105,7 +106,11 @@ export function createAgentTools({userId}: {userId: string | null}) {
       inputSchema: z.object({}),
       execute: async () => {
         if (!userId) return {error: 'Not signed in'}
-        const bookings = await client.fetch(MY_BOOKINGS_QUERY, {clerkUserId: userId})
+        const bookings = await client.fetch(
+          MY_BOOKINGS_QUERY,
+          {clerkUserId: userId},
+          {cache: 'no-store'},
+        )
         return {bookings}
       },
     }),

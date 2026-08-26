@@ -83,7 +83,11 @@ export async function POST(req: Request) {
     const result = streamText({
       model: openrouter(modelId),
       system,
-      messages: await convertToModelMessages(messages),
+      // createBooking/cancelBooking are confirm-gated and have no `execute`,
+      // so an un-clicked confirm card leaves a tool call with no result. That
+      // is not an action the user took — drop it rather than replaying a
+      // dangling tool call, which strict providers reject outright.
+      messages: await convertToModelMessages(messages, {ignoreIncompleteToolCalls: true}),
       tools: {
         ...mcpTools,
         ...createAgentTools({userId}),
