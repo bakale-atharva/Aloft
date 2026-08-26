@@ -1,26 +1,254 @@
 @import "tailwindcss";
 
+/* Dark mode is class-driven (.dark on <html>), set before paint by the init
+   script in src/app/layout.tsx. Every existing `dark:` utility keeps working. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  /* canvas & surfaces */
+  --canvas: #e2dff5;
+  --canvas-edge: #d5d1ef;
+  --surface: #ffffff;
+  --surface-2: #faf8ff;
+  --surface-sunken: #f4f1fc;
+
+  /* borders */
+  --border: #e8e4f7;
+  --border-strong: #d3ccec;
+  --border-accent: #c4b5fd;
+
+  /* text */
+  --ink: #171340;
+  --ink-muted: #625e85;
+  --ink-faint: #756f8f;
+  --on-accent: #ffffff;
+
+  /* violet ramp */
+  --accent-50: #f5f3ff;
+  --accent-100: #ede9fe;
+  --accent-200: #ddd6fe;
+  --accent-300: #c4b5fd;
+  --accent-400: #a78bfa;
+  --accent-500: #8b5cf6;
+  --accent-600: #7c3aed;
+  --accent-700: #6d28d9;
+
+  /* magenta / blush ramp */
+  --pink-100: #fce7f3;
+  --pink-200: #fbcfe8;
+  --pink-300: #f9a8d4;
+  --pink-500: #ec4899;
+  --pink-600: #db2777;
+
+  /* signature gradient stops */
+  --grad-from: #7c3aed;
+  --grad-mid: #a855f7;
+  --grad-to: #ec4899;
+
+  /* hero wash stops (top -> bottom) */
+  --hero-from: #ece7fe;
+  --hero-mid: #f3e6fb;
+  --hero-to: #fde6ef;
+
+  /* status */
+  --success: #0f9d6e;
+  --success-soft: #e6f7f1;
+  --warning: #b8730a;
+  --warning-soft: #fdf3e2;
+  --danger: #c4283a;
+  --danger-soft: #fdecee;
+  --danger-border: #f4c2c8;
+
+  /* shadows (raw, so .dark can override) */
+  --sh-card: 0 1px 2px rgb(23 19 64 / 0.04), 0 8px 24px -12px rgb(23 19 64 / 0.1);
+  --sh-float: 0 2px 4px rgb(23 19 64 / 0.05), 0 24px 48px -20px rgb(23 19 64 / 0.22);
+  --sh-shell: 0 24px 64px -24px rgb(23 19 64 / 0.28);
+  --sh-cta: 0 8px 24px -8px rgb(124 58 237 / 0.55);
+
+  /* legacy aliases — DO NOT REMOVE. Existing markup uses bg-foreground /
+     text-background / bg-background/95, which would otherwise compile away. */
+  --background: var(--surface);
+  --foreground: var(--ink);
 }
 
+.dark {
+  color-scheme: dark;
+
+  --canvas: #0a0817;
+  --canvas-edge: #070512;
+  --surface: #14112b;
+  --surface-2: #1c1838;
+  --surface-sunken: #100d24;
+
+  --border: #2a2450;
+  --border-strong: #3a3268;
+  --border-accent: #7c5cf0;
+
+  --ink: #ece9fb;
+  --ink-muted: #a49fc6;
+  --ink-faint: #8b85ad;
+  --on-accent: #ffffff;
+
+  /* Deliberately NOT a simple inversion: 50..200 become dark violet tints and
+     400..700 become light violets, so `bg-accent-100 text-accent-600` reads
+     correctly in BOTH themes from a single class string. */
+  --accent-50: #1a1436;
+  --accent-100: #221a47;
+  --accent-200: #33276b;
+  --accent-300: #5b45b8;
+  --accent-400: #8b6df5;
+  --accent-500: #a78bfa;
+  --accent-600: #b69bff;
+  --accent-700: #c9b6ff;
+
+  --pink-100: #2c1230;
+  --pink-200: #45183f;
+  --pink-300: #8d3a6e;
+  --pink-500: #f472b6;
+  --pink-600: #f9a8d4;
+
+  /* gradients stay vivid in both themes */
+  --grad-from: #7c3aed;
+  --grad-mid: #a855f7;
+  --grad-to: #ec4899;
+
+  --hero-from: #1b1440;
+  --hero-mid: #241546;
+  --hero-to: #331734;
+
+  --success: #34d399;
+  --success-soft: #0c2a22;
+  --warning: #fbbf24;
+  --warning-soft: #2c2109;
+  --danger: #fb7185;
+  --danger-soft: #2c1219;
+  --danger-border: #5a2430;
+
+  --sh-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --sh-float: 0 2px 4px rgb(0 0 0 / 0.45), 0 24px 48px -20px rgb(0 0 0 / 0.55);
+  --sh-shell: 0 24px 64px -24px rgb(0 0 0 / 0.6);
+  --sh-cta: 0 8px 24px -8px rgb(124 58 237 / 0.35);
+}
+
+/* MUST stay `@theme inline`. `inline` resolves each token to the literal
+   var(--x) at its use site, so overriding the raw var on .dark re-themes at
+   runtime. Plain `@theme` would snapshot the light values and dark mode would
+   silently do nothing. */
 @theme inline {
+  --color-canvas: var(--canvas);
+  --color-canvas-edge: var(--canvas-edge);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-sunken: var(--surface-sunken);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-accent: var(--border-accent);
+
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-on-accent: var(--on-accent);
+
+  --color-accent-50: var(--accent-50);
+  --color-accent-100: var(--accent-100);
+  --color-accent-200: var(--accent-200);
+  --color-accent-300: var(--accent-300);
+  --color-accent-400: var(--accent-400);
+  --color-accent-500: var(--accent-500);
+  --color-accent-600: var(--accent-600);
+  --color-accent-700: var(--accent-700);
+  --color-accent: var(--accent-600);
+  --color-accent-soft: var(--accent-100);
+
+  --color-pink-100: var(--pink-100);
+  --color-pink-200: var(--pink-200);
+  --color-pink-300: var(--pink-300);
+  --color-pink-500: var(--pink-500);
+  --color-pink-600: var(--pink-600);
+  --color-pink: var(--pink-500);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-border: var(--danger-border);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --radius-field: 1rem;
+  --radius-card: 1.5rem;
+  --radius-shell: 2rem;
+
+  --shadow-card: var(--sh-card);
+  --shadow-float: var(--sh-float);
+  --shadow-shell: var(--sh-shell);
+  --shadow-cta: var(--sh-cta);
+
+  --font-display: var(--font-outfit);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Vertical lavender -> blush wash behind the hero and section bands. */
+@utility hero-wash {
+  background-image: linear-gradient(
+    to bottom,
+    var(--hero-from) 0%,
+    var(--hero-mid) 48%,
+    var(--hero-to) 100%
+  );
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+/* Violet -> pink clipped to the glyphs. padding-bottom keeps descenders
+   from being clipped by the background box. */
+@utility text-gradient {
+  background-image: linear-gradient(100deg, var(--grad-from), var(--grad-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-bottom: 0.06em;
+}
+
+/* Primary CTA fill. */
+@utility bg-gradient-brand {
+  background-image: linear-gradient(
+    100deg,
+    var(--grad-from),
+    var(--grad-mid) 55%,
+    var(--grad-to)
+  );
+}
+
+/* Left-pointing chevron. NOTE: clip-path cuts a normal border off the angled
+   edges, so StatChevron nests two clipped divs to fake the outline. */
+@utility clip-chevron-l {
+  clip-path: polygon(0% 50%, 1.75rem 0%, 100% 0%, 100% 100%, 1.75rem 100%);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+  }
+
+  ::selection {
+    background: var(--accent-200);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent-600);
+    outline-offset: 2px;
+  }
 }
