@@ -3,6 +3,8 @@
 import {useRouter, useSearchParams} from 'next/navigation'
 import {useState} from 'react'
 
+import {Button} from '@/components/ui/Button'
+import {selectClass} from '@/components/ui/Field'
 import {PassengerStepper} from './PassengerStepper'
 import type {CabinClass} from '@/lib/seat-map'
 
@@ -40,39 +42,41 @@ export function SearchRefineBar({
   }
 
   return (
-    <div className="mb-6 flex flex-wrap items-end gap-4 rounded-xl border border-black/10 p-4 dark:border-white/10">
-      <label className="block">
-        <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-black/50 dark:text-white/50">
-          Passengers
-        </span>
-        <PassengerStepper value={passengers} onChange={setPassengers} idPrefix="refine-passengers" />
-      </label>
+    <div className="rounded-card border border-border bg-surface-2 p-4 shadow-card">
+      <div className="flex flex-wrap items-end gap-4">
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-ink-faint">
+            Passengers
+          </span>
+          <PassengerStepper value={passengers} onChange={setPassengers} idPrefix="refine-passengers" variant="boxed" />
+        </label>
 
-      <label className="block">
-        <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-black/50 dark:text-white/50">
-          Class
-        </span>
-        <select
-          value={cabinClass}
-          onChange={(e) => setCabinClass(e.target.value as CabinClass)}
-          className="rounded-xl border border-black/10 bg-transparent px-3 py-2 text-sm focus:outline-2 focus:outline-offset-1 focus:outline-current dark:border-white/15"
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-ink-faint">
+            Class
+          </span>
+          <select
+            value={cabinClass}
+            onChange={(e) => setCabinClass(e.target.value as CabinClass)}
+            className={selectClass}
+          >
+            {CABIN_CLASSES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <Button
+          type="button"
+          onClick={apply}
+          disabled={!isDirty}
+          variant="solid"
         >
-          {CABIN_CLASSES.map((c) => (
-            <option key={c.value} value={c.value}>
-              {c.label}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <button
-        type="button"
-        onClick={apply}
-        disabled={!isDirty}
-        className="rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        Update search
-      </button>
+          Update search
+        </Button>
+      </div>
     </div>
   )
 }

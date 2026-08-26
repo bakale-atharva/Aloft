@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import {Plane, SearchX} from 'lucide-react'
 
 import {client} from '@/sanity/client'
 import {SEARCH_FLIGHTS_QUERY} from '@/sanity/queries'
+import {Card} from '@/components/ui/Card'
 import {FlightCard} from '@/components/flight-card/FlightCard'
 import {SearchRefineBar} from '@/components/search-form/SearchRefineBar'
 import type {CabinClass} from '@/lib/seat-map'
@@ -52,14 +54,17 @@ export default async function SearchPage({
 
   if (!origin || !destination || !departureDate) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-16 text-center">
-        <p className="text-black/60 dark:text-white/60">
-          Missing search details.{' '}
-          <Link href="/" className="underline">
-            Start a new search
-          </Link>
-          .
-        </p>
+      <div className="mx-auto flex max-w-2xl items-center justify-center px-6 py-16">
+        <Card tone="plain" padding="lg" className="text-center">
+          <SearchX className="mx-auto mb-4 size-8 text-ink-muted" aria-hidden />
+          <p className="text-ink-muted">
+            Missing search details.{' '}
+            <Link href="/" className="underline hover:text-ink">
+              Start a new search
+            </Link>
+            .
+          </p>
+        </Card>
       </div>
     )
   }
@@ -108,43 +113,52 @@ export default async function SearchPage({
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 py-10">
-      <div className="mb-6">
-        <p className="text-sm text-black/50 dark:text-white/50">
-          {showingInbound ? 'Return flight' : isRoundTrip ? 'Outbound flight' : 'Flights'} ·{' '}
-          {passengers} passenger{passengers > 1 ? 's' : ''} · {cabinClass}
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">
-          {activeOrigin} → {activeDestination}
-        </h1>
-        <p className="text-sm text-black/50 dark:text-white/50">
-          {new Date(`${activeDate}T00:00:00Z`).toLocaleDateString('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </p>
+    <div className="w-full">
+      <div className="mx-auto max-w-4xl px-6 py-10">
+        <div className="mb-6">
+          <p className="text-sm text-ink-muted">
+            {showingInbound ? 'Return flight' : isRoundTrip ? 'Outbound flight' : 'Flights'} ·{' '}
+            {passengers} passenger{passengers > 1 ? 's' : ''} · {cabinClass}
+          </p>
+          <h1 className="font-display mt-1 text-2xl text-ink">
+            {activeOrigin} → {activeDestination}
+          </h1>
+          <p className="text-sm text-ink-muted">
+            {new Date(`${activeDate}T00:00:00Z`).toLocaleDateString('en-US', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </p>
+        </div>
+
+        <SearchRefineBar passengers={passengers} cabinClass={cabinClass as CabinClass} />
       </div>
 
-      <SearchRefineBar passengers={passengers} cabinClass={cabinClass as CabinClass} />
-
-      {flights.length === 0 ? (
-        <p className="rounded-xl border border-black/10 p-8 text-center text-black/60 dark:border-white/10 dark:text-white/60">
-          No flights found for this route and date. Try a different date.
-        </p>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {flights.map((flight) => (
-            <FlightCard
-              key={flight._id}
-              flight={flight}
-              cabinClass={cabinClass as CabinClass}
-              passengers={passengers}
-              selectHref={buildSelectHref(flight._id)}
-            />
-          ))}
+      <div className="bg-surface-sunken py-6">
+        <div className="mx-auto max-w-4xl px-6">
+          {flights.length === 0 ? (
+            <Card tone="plain" padding="lg" className="text-center">
+              <Plane className="mx-auto mb-4 size-8 text-ink-muted" aria-hidden />
+              <p className="text-ink-muted">
+                No flights found for this route and date. Try a different date.
+              </p>
+            </Card>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {flights.map((flight) => (
+                <FlightCard
+                  key={flight._id}
+                  flight={flight}
+                  cabinClass={cabinClass as CabinClass}
+                  passengers={passengers}
+                  selectHref={buildSelectHref(flight._id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

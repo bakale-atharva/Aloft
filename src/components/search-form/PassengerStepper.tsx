@@ -7,15 +7,21 @@ export function PassengerStepper({
   value,
   onChange,
   idPrefix = 'passengers',
+  variant = 'boxed',
 }: {
   value: number
   onChange: (next: number) => void
   idPrefix?: string
+  variant?: 'bare' | 'boxed'
 }) {
   const clamp = (n: number) => Math.min(MAX_PASSENGERS, Math.max(MIN_PASSENGERS, n))
 
+  const containerClass = variant === 'boxed'
+    ? 'flex items-center gap-2 rounded-field border border-border bg-surface px-2 py-1.5'
+    : 'flex items-center gap-2'
+
   return (
-    <div className="flex items-center justify-between gap-2 rounded-xl border border-black/10 px-2 py-1.5 dark:border-white/15">
+    <div className={containerClass}>
       <StepButton
         label="Remove a passenger"
         disabled={value <= MIN_PASSENGERS}
@@ -24,26 +30,21 @@ export function PassengerStepper({
         −
       </StepButton>
 
-      <div className="flex items-baseline gap-1.5">
-        <input
-          id={idPrefix}
-          type="number"
-          inputMode="numeric"
-          min={MIN_PASSENGERS}
-          max={MAX_PASSENGERS}
-          value={value}
-          onChange={(e) => {
-            const parsed = Number(e.target.value)
-            if (Number.isNaN(parsed)) return
-            onChange(clamp(parsed))
-          }}
-          aria-label="Number of passengers"
-          className="w-8 bg-transparent text-center text-sm font-semibold tabular-nums focus:outline-2 focus:outline-offset-2 focus:outline-current [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-        />
-        <span className="text-xs text-black/50 dark:text-white/50">
-          {value === 1 ? 'adult' : 'adults'}
-        </span>
-      </div>
+      <input
+        id={idPrefix}
+        type="number"
+        inputMode="numeric"
+        min={MIN_PASSENGERS}
+        max={MAX_PASSENGERS}
+        value={value}
+        onChange={(e) => {
+          const parsed = Number(e.target.value)
+          if (Number.isNaN(parsed)) return
+          onChange(clamp(parsed))
+        }}
+        aria-label="Number of passengers"
+        className="w-full min-w-0 bg-transparent text-center text-base font-semibold text-ink outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+      />
 
       <StepButton
         label="Add a passenger"
@@ -73,7 +74,7 @@ function StepButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-black/15 text-base leading-none transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-30 dark:border-white/20 dark:hover:bg-white/10"
+      className="grid size-6 shrink-0 place-items-center rounded-full bg-surface-sunken text-ink-muted transition hover:bg-accent-100 hover:text-accent-600 disabled:opacity-40"
     >
       {children}
     </button>

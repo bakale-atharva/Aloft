@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import {Plane} from 'lucide-react'
 
+import {buttonClass} from '@/components/ui/Button'
 import type {FlightResult} from '@/lib/types'
 import type {CabinClass} from '@/lib/seat-map'
 
@@ -32,55 +34,59 @@ export function FlightCard({
   if (!fare) return null
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-black/10 p-5 transition-colors hover:border-black/20 dark:border-white/10 dark:hover:border-white/25 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 rounded-card border border-border bg-surface-2 p-6 shadow-card transition hover:border-border-accent hover:shadow-float sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-1 items-center gap-6">
         <div className="w-24 shrink-0">
-          <p className="text-sm font-semibold">{flight.airline.code}</p>
-          <p className="text-xs text-black/50 dark:text-white/50">{flight.flightNumber}</p>
+          <p className="text-sm font-semibold text-ink">{flight.airline.code}</p>
+          <p className="text-xs text-ink-muted">{flight.flightNumber}</p>
         </div>
 
         <div className="flex flex-1 items-center gap-4">
           <div className="text-right">
-            <p className="text-lg font-semibold">
+            <p className="font-display text-lg text-ink">
               {formatTime(flight.departureTime, flight.origin.timezone)}
             </p>
-            <p className="text-xs text-black/50 dark:text-white/50">{flight.origin.code}</p>
+            <p className="text-xs text-ink">{flight.origin.code}</p>
           </div>
 
           <div className="flex flex-1 flex-col items-center px-2">
-            <p className="text-xs text-black/50 dark:text-white/50">
+            <p className="text-xs text-ink-muted">
               {formatDuration(flight.durationMinutes)}
             </p>
-            <div className="my-1 h-px w-full bg-black/15 dark:bg-white/20" />
-            <p className="text-[10px] uppercase tracking-wide text-black/40 dark:text-white/40">
+            <div className="relative my-1 flex w-full items-center">
+              <div className="border-t border-dashed border-border flex-1" />
+              <Plane className="absolute left-1/2 size-4 -translate-x-1/2 bg-surface-2 text-accent-600 rotate-90" aria-hidden />
+              <div className="border-t border-dashed border-border flex-1" />
+            </div>
+            <p className="text-[10px] uppercase tracking-wide text-ink-muted">
               Nonstop
             </p>
           </div>
 
           <div>
-            <p className="text-lg font-semibold">
+            <p className="font-display text-lg text-ink">
               {formatTime(flight.arrivalTime, flight.destination.timezone)}
             </p>
-            <p className="text-xs text-black/50 dark:text-white/50">{flight.destination.code}</p>
+            <p className="text-xs text-ink">{flight.destination.code}</p>
           </div>
         </div>
       </div>
 
       <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end sm:justify-center">
         <div className="text-right">
-          <p className="text-xl font-semibold">
+          <p className="font-display text-2xl text-ink">
             ${fare.basePrice}
-            <span className="text-xs font-normal text-black/50 dark:text-white/50"> /person</span>
+            <span className="text-xs font-normal text-ink-faint"> /person</span>
           </p>
           {passengers > 1 && (
-            <p className="text-xs text-black/50 dark:text-white/50">
+            <p className="text-xs text-ink-muted">
               ${fare.basePrice * passengers} total
             </p>
           )}
         </div>
         <Link
           href={selectHref}
-          className="rounded-full bg-foreground px-5 py-2 text-sm font-semibold text-background hover:opacity-90"
+          className={buttonClass({variant: 'primary', size: 'md'})}
         >
           Select
         </Link>
