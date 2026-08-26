@@ -1,5 +1,10 @@
 import Link from 'next/link'
 
+import {Plane} from 'lucide-react'
+
+import {cn} from '@/components/ui/cn'
+
+
 export type PopularRoute = {
   originCode: string
   originCity: string
@@ -37,8 +42,8 @@ export function PopularRoutes({routes}: {routes: PopularRoute[]}) {
     <section className="mx-auto w-full max-w-6xl px-6 py-16">
       <div className="mb-8 flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">Popular routes</h2>
-          <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+          <h2 className="font-display text-2xl font-semibold text-ink">Popular routes</h2>
+          <p className="mt-1 text-sm text-ink-muted">
             Lowest economy fares on our busiest city pairs.
           </p>
         </div>
@@ -49,20 +54,25 @@ export function PopularRoutes({routes}: {routes: PopularRoute[]}) {
           <Link
             key={`${route.originCode}-${route.destinationCode}`}
             href={searchHref(route)}
-            className="group rounded-xl border border-black/10 p-5 transition-colors hover:border-black/25 dark:border-white/10 dark:hover:border-white/30"
+            className={cn(
+              'transition hover:border-border-accent hover:shadow-float',
+              'rounded-card border border-border p-5 flex flex-col',
+            )}
           >
             <div className="flex items-baseline justify-between gap-3">
-              <p className="font-semibold">
-                {route.originCode} → {route.destinationCode}
+              <p className="flex items-center gap-2 font-semibold text-ink">
+                {route.originCode}
+                <Plane className="size-4 text-accent-600" aria-hidden />
+                {route.destinationCode}
               </p>
-              <p className="text-sm font-semibold">
-                from {route.currency} ${route.fromPrice}
+              <p className="font-display text-accent-700">
+                {route.currency} ${route.fromPrice}
               </p>
             </div>
-            <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+            <p className="mt-1 text-sm text-ink-muted">
               {route.originCity} to {route.destinationCity}
             </p>
-            <p className="mt-3 text-xs text-black/45 dark:text-white/45">
+            <p className="mt-3 text-xs text-ink-faint">
               Nonstop · {formatDuration(route.durationMinutes)} · next on{' '}
               {new Date(route.departureTime).toLocaleDateString('en-US', {
                 month: 'short',

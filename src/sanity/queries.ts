@@ -119,6 +119,7 @@ export const LANDING_STATS_QUERY = defineQuery(
     "airports": count(*[_type == "airport"]),
     "airlines": count(*[_type == "airline"]),
     "flights": count(*[_type == "flight" && status == "scheduled"]),
+    "travellers": count(*[_type == "booking"]),
   }`,
 )
 

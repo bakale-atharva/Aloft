@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+import {Armchair, ArrowLeftRight, Check, ChevronRight, Sparkles, Star} from 'lucide-react'
+
 import {client} from '@/sanity/client'
 import {
   AIRPORTS_QUERY,
@@ -7,6 +9,13 @@ import {
   LANDING_STATS_QUERY,
   POPULAR_ROUTES_QUERY,
 } from '@/sanity/queries'
+import {cn} from '@/components/ui/cn'
+import {buttonClass} from '@/components/ui/Button'
+import {Card} from '@/components/ui/Card'
+import {Pill, Badge} from '@/components/ui/Pill'
+import {StatChevron} from '@/components/ui/StatChevron'
+import {GradientText} from '@/components/ui/GradientText'
+import {HeroAircraft} from '@/components/landing/HeroAircraft'
 import {SearchForm} from '@/components/search-form/SearchForm'
 import {PopularRoutes, type PopularRoute} from '@/components/landing/PopularRoutes'
 
@@ -71,36 +80,54 @@ export default async function Home() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <section className="relative overflow-hidden border-b border-black/10 bg-gradient-to-b from-blue-50 to-background dark:border-white/10 dark:from-blue-950/20">
-        <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-16 sm:py-24">
-          <div className="max-w-2xl">
-            <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-black/10 px-3 py-1 text-xs font-medium text-black/60 dark:border-white/15 dark:text-white/60">
-              Real seat maps · No hidden seat fees on PRO
-            </p>
-            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-              Fly further, sit better.
-            </h1>
-            <p className="mt-4 text-lg text-black/60 dark:text-white/60">
-              Search flights, pick your exact seat on a real cabin map, and book in minutes. PRO
-              members skip every seat fee and get their own AI concierge.
-            </p>
+      <section className="relative isolate hero-wash">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-1/4 -z-10 h-[420px] bg-[radial-gradient(55%_50%_at_50%_50%,var(--accent-200),transparent_72%)] opacity-70"
+        />
+        <div className="mx-auto w-full max-w-6xl px-6 pt-12 pb-44 sm:pt-16 lg:pb-48">
+          <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_auto]">
+            <div className="max-w-2xl">
+              <Pill as="span">Real seat maps · No hidden seat fees on PRO</Pill>
+              <h1 className="mt-5 text-balance font-display text-[clamp(2.5rem,7vw,4.75rem)] font-semibold leading-[0.94] tracking-[-0.035em] text-ink">
+                Book flights easily,
+                <br />
+                <GradientText>travel smarter.</GradientText>
+              </h1>
+              <p className="mt-5 max-w-md text-lg leading-relaxed text-ink-muted">
+                Search flights, pick your exact seat on a real cabin map, and book in minutes. PRO
+                members skip every seat fee and get their own AI concierge.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-5">
+                <Link href="/pricing" className={buttonClass({variant: 'primary', size: 'lg'})}>
+                  Get started
+                  <ChevronRight className="size-4" />
+                </Link>
+                <SocialProof travellers={stats.travellers} />
+              </div>
+            </div>
+            <StatRail stats={stats} />
           </div>
-          <SearchForm airports={airports} />
-
-          <dl className="grid grid-cols-3 gap-6 border-t border-black/10 pt-8 dark:border-white/10 sm:max-w-lg">
-            <Stat value={stats.airports} label="Airports" />
-            <Stat value={stats.airlines} label="Airlines" />
-            <Stat value={stats.flights} label="Scheduled flights" />
-          </dl>
+          <div className="relative mx-auto mt-6 w-full max-w-2xl lg:-mt-20">
+            <HeroAircraft className="h-auto w-full select-none" />
+          </div>
         </div>
       </section>
 
-      <PopularRoutes routes={popularRoutes} />
+      <div className="relative z-20 -mt-32 px-4 sm:px-6 lg:-mt-36">
+        <div className="mx-auto w-full max-w-5xl">
+          <SearchForm airports={airports} />
+        </div>
+      </div>
 
-      <section className="border-y border-black/10 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.02]">
+      <section id="popular-routes">
+        <PopularRoutes routes={popularRoutes} />
+      </section>
+
+      <section className="border-y border-border bg-surface">
         <div className="mx-auto w-full max-w-6xl px-6 py-16">
-          <h2 className="text-2xl font-semibold tracking-tight">How booking works</h2>
-          <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+          <h2 className="font-display text-2xl font-semibold text-ink">How booking works</h2>
+          <p className="mt-1 text-sm text-ink-muted">
             Four steps, no account required until checkout.
           </p>
 
@@ -129,25 +156,30 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-6 py-16 sm:grid-cols-3">
-        <Feature
-          title="Visual seat picker"
-          description="See the real cabin layout for your aircraft and tap the exact seat you want, exit rows and all. Seat availability is checked again at checkout, so you never double-book."
-        />
-        <Feature
-          title="One-way or round trip"
-          description="Search both directions in a single flow, with a running total that updates as you pick seats for each leg."
-        />
-        <Feature
-          title="AI concierge, PRO only"
-          description="Chat your way to a booking or get instant support answers. The concierge always shows you a confirmation card before it books or cancels anything."
-        />
+      <section className="mx-auto w-full max-w-6xl px-6 py-16">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+          <Feature
+            title="Visual seat picker"
+            description="See the real cabin layout for your aircraft and tap the exact seat you want, exit rows and all. Seat availability is checked again at checkout, so you never double-book."
+            icon="armchair"
+          />
+          <Feature
+            title="One-way or round trip"
+            description="Search both directions in a single flow, with a running total that updates as you pick seats for each leg."
+            icon="arrow"
+          />
+          <Feature
+            title="AI concierge, PRO only"
+            description="Chat your way to a booking or get instant support answers. The concierge always shows you a confirmation card before it books or cancels anything."
+            icon="sparkles"
+          />
+        </div>
       </section>
 
-      <section className="border-y border-black/10 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.02]">
+      <section className="border-y border-border bg-surface">
         <div className="mx-auto w-full max-w-4xl px-6 py-16">
-          <h2 className="text-2xl font-semibold tracking-tight">Free vs PRO</h2>
-          <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+          <h2 className="font-display text-2xl font-semibold text-ink">Free vs PRO</h2>
+          <p className="mt-1 text-sm text-ink-muted">
             Everything in Free, plus the parts that save you money on every trip.
           </p>
 
@@ -180,44 +212,35 @@ export default async function Home() {
 
       {faqs.length > 0 && (
         <section className="mx-auto w-full max-w-4xl px-6 py-16">
-          <h2 className="text-2xl font-semibold tracking-tight">Common questions</h2>
-          <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+          <h2 className="font-display text-2xl font-semibold text-ink">Common questions</h2>
+          <p className="mt-1 text-sm text-ink-muted">
             PRO members can ask the concierge these directly, in plain language.
           </p>
 
           <ul className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {faqs.map((faq) => (
-              <li
-                key={faq._id}
-                className="rounded-xl border border-black/10 p-4 dark:border-white/10"
-              >
-                <p className="text-xs uppercase tracking-wide text-black/40 dark:text-white/40">
-                  {faq.category}
-                </p>
-                <p className="mt-1 text-sm font-medium">{faq.question}</p>
+              <li key={faq._id}>
+                <Card tone="plain" padding="sm">
+                  <Badge tone="accent">{faq.category}</Badge>
+                  <p className="mt-2 text-sm font-medium text-ink">{faq.question}</p>
+                </Card>
               </li>
             ))}
           </ul>
         </section>
       )}
 
-      <section className="border-t border-black/10 dark:border-white/10">
+      <section className="border-t border-border">
         <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-4 px-6 py-16 text-center">
-          <h2 className="text-2xl font-semibold tracking-tight">Ready when you are.</h2>
-          <p className="max-w-md text-sm text-black/60 dark:text-white/60">
+          <h2 className="font-display text-2xl font-semibold text-ink">Ready when you are.</h2>
+          <p className="max-w-md text-sm text-ink-muted">
             Pick a route above, or let the concierge do the searching for you.
           </p>
           <div className="mt-2 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/pricing"
-              className="rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background hover:opacity-90"
-            >
+            <Link href="/pricing" className={buttonClass({variant: 'primary', size: 'lg'})}>
               Upgrade to PRO
             </Link>
-            <Link
-              href="/bookings"
-              className="rounded-full border border-black/10 px-6 py-3 text-sm font-semibold hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10"
-            >
+            <Link href="/bookings" className={buttonClass({variant: 'outline', size: 'lg'})}>
               My bookings
             </Link>
           </div>
@@ -227,15 +250,6 @@ export default async function Home() {
   )
 }
 
-function Stat({value, label}: {value: number; label: string}) {
-  return (
-    <div>
-      <dt className="sr-only">{label}</dt>
-      <dd className="text-2xl font-semibold tracking-tight">{value}</dd>
-      <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">{label}</p>
-    </div>
-  )
-}
 
 function Step({
   number,
@@ -248,21 +262,39 @@ function Step({
 }) {
   return (
     <li>
-      <span className="flex h-8 w-8 items-center justify-center rounded-full border border-black/15 text-sm font-semibold dark:border-white/20">
+      <span className="grid size-10 place-items-center rounded-full bg-accent-100 font-display font-semibold text-accent-600">
         {number}
       </span>
-      <h3 className="mt-3 font-semibold">{title}</h3>
-      <p className="mt-1.5 text-sm text-black/60 dark:text-white/60">{description}</p>
+      <h3 className="mt-3 font-semibold text-ink">{title}</h3>
+      <p className="mt-1.5 text-sm text-ink-muted">{description}</p>
     </li>
   )
 }
 
-function Feature({title, description}: {title: string; description: string}) {
+function Feature({
+  title,
+  description,
+  icon,
+}: {
+  title: string
+  description: string
+  icon: 'armchair' | 'arrow' | 'sparkles'
+}) {
+  const icons = {
+    armchair: Armchair,
+    arrow: ArrowLeftRight,
+    sparkles: Sparkles,
+  }
+  const Icon = icons[icon]
+
   return (
-    <div>
-      <h2 className="font-semibold">{title}</h2>
-      <p className="mt-2 text-sm text-black/60 dark:text-white/60">{description}</p>
-    </div>
+    <Card tone="raised">
+      <div className="grid size-9 shrink-0 place-items-center rounded-full bg-accent-100 text-accent-600">
+        <Icon className="size-4" strokeWidth={2} aria-hidden />
+      </div>
+      <h2 className="mt-4 font-semibold text-ink">{title}</h2>
+      <p className="mt-2 text-sm text-ink-muted">{description}</p>
+    </Card>
   )
 }
 
@@ -279,34 +311,85 @@ function PlanCard({
   highlighted?: boolean
   cta?: {href: string; label: string}
 }) {
+  if (highlighted) {
+    return (
+      <div className="rounded-card bg-gradient-brand p-px">
+        <div className="rounded-[calc(1.5rem-1px)] bg-surface p-6">
+          <p className="text-sm font-semibold uppercase tracking-wide text-ink">{name}</p>
+          <p className="mt-1 text-sm text-ink-muted">{tagline}</p>
+          <ul className="mt-5 flex flex-1 flex-col gap-2 text-sm">
+            {features.map((feature) => (
+              <li key={feature} className="flex gap-2">
+                <Check className="size-4 shrink-0 text-accent-600" />
+                <span className="text-ink">{feature}</span>
+              </li>
+            ))}
+          </ul>
+          {cta && (
+            <Link
+              href={cta.href}
+              className={cn('mt-6 block', buttonClass({variant: 'primary', size: 'lg'}))}
+            >
+              {cta.label}
+            </Link>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div
-      className={`flex flex-col rounded-2xl border p-6 ${
-        highlighted
-          ? 'border-blue-500/40 bg-blue-50/50 dark:border-blue-400/30 dark:bg-blue-950/20'
-          : 'border-black/10 dark:border-white/10'
-      }`}
-    >
-      <p className="text-sm font-semibold uppercase tracking-wide">{name}</p>
-      <p className="mt-1 text-sm text-black/60 dark:text-white/60">{tagline}</p>
+    <Card tone="plain">
+      <p className="text-sm font-semibold uppercase tracking-wide text-ink">{name}</p>
+      <p className="mt-1 text-sm text-ink-muted">{tagline}</p>
       <ul className="mt-5 flex flex-1 flex-col gap-2 text-sm">
         {features.map((feature) => (
           <li key={feature} className="flex gap-2">
-            <span aria-hidden className="text-black/30 dark:text-white/30">
-              —
-            </span>
-            <span className="text-black/70 dark:text-white/70">{feature}</span>
+            <Check className="size-4 shrink-0 text-accent-600" />
+            <span className="text-ink">{feature}</span>
           </li>
         ))}
       </ul>
-      {cta && (
-        <Link
-          href={cta.href}
-          className="mt-6 rounded-full bg-foreground px-5 py-2.5 text-center text-sm font-semibold text-background hover:opacity-90"
-        >
-          {cta.label}
-        </Link>
-      )}
+    </Card>
+  )
+}
+
+function StatRail({stats}: {stats: {airports: number; airlines: number; flights: number}}) {
+  return (
+    <ul className="-mx-6 flex snap-x gap-3 overflow-x-auto px-6 pb-2 lg:mx-0 lg:w-64 lg:flex-col lg:overflow-visible lg:px-0">
+      <li className="shrink-0 snap-start lg:w-full">
+        <StatChevron value={`${stats.airlines}+`} label="Airlines supported" />
+      </li>
+      <li className="shrink-0 snap-start lg:w-full">
+        <StatChevron value={`${stats.airports}+`} label="Airports worldwide" />
+      </li>
+      <li className="shrink-0 snap-start lg:w-full">
+        <StatChevron value={`${stats.flights}+`} label="Scheduled flights" />
+      </li>
+    </ul>
+  )
+}
+
+function SocialProof({travellers}: {travellers?: number}) {
+  if (!travellers) return null
+
+  return (
+    <div className="flex items-center gap-3">
+      <div aria-hidden className="flex -space-x-2">
+        {[0, 1, 2, 3].map((i) => (
+          <span
+            key={i}
+            className="size-8 rounded-full bg-gradient-to-br from-accent-300 to-pink-300 ring-2 ring-surface"
+          />
+        ))}
+      </div>
+      <div>
+        <div className="flex items-center gap-1">
+          <Star className="size-4 fill-warning text-warning" />
+          <span className="text-sm font-semibold text-ink">{travellers.toLocaleString()}</span>
+        </div>
+        <p className="text-xs text-ink-muted">travellers booked with Aloft</p>
+      </div>
     </div>
   )
 }
