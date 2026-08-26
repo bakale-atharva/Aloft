@@ -4,7 +4,7 @@ import {convertToModelMessages, stepCountIs, streamText, type UIMessage} from 'a
 
 import {getEntitlements} from '@/lib/entitlements'
 import {createAgentTools} from '@/lib/agent/tools'
-import {CONCIERGE_SYSTEM_PROMPT} from '@/lib/agent/system-prompt'
+import {buildConciergeSystemPrompt} from '@/lib/agent/system-prompt'
 
 const DEFAULT_MODEL = 'nvidia/nemotron-3.5-lightning:free'
 const MAX_STEPS = 10
@@ -42,6 +42,20 @@ async function fetchInitialContext(): Promise<string | null> {
   return cachedInitialContext
 }
 
+/**
+ * The browser supplies its IANA zone; anything unrecognised (or absent, e.g. an
+ * older client) falls back to UTC rather than throwing inside the prompt build.
+ */
+function isValidTimeZone(timeZone: string | undefined): timeZone is string {
+  if (!timeZone) return false
+  try {
+    new Intl.DateTimeFormat('en-CA', {timeZone})
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function POST(req: Request) {
   const {userId, canUseConcierge} = await getEntitlements()
   if (!userId || !canUseConcierge) {
@@ -52,7 +66,8 @@ export async function POST(req: Request) {
     return Response.json({error: 'Concierge is not configured.'}, {status: 500})
   }
 
-  const {messages}: {messages: UIMessage[]} = await req.json()
+  const {messages, timeZone}: {messages: UIMessage[]; timeZone?: string} = await req.json()
+  const resolvedTimeZone = isValidTimeZone(timeZone) ? timeZone : 'UTC'
 
   let mcpClient: MCPClient | null = null
 
@@ -73,7 +88,7 @@ export async function POST(req: Request) {
     // Excluded — its data is already folded into the system prompt below.
     const {initial_context: _initialContextTool, ...mcpTools} = allMcpTools
 
-    const system = `${CONCIERGE_SYSTEM_PROMPT}${
+    const system = `${buildConciergeSystemPrompt({timeZone: resolvedTimeZone})}${
       initialContext ? `\n\n## Data reference\n\n${initialContext}` : ''
     }`
 
