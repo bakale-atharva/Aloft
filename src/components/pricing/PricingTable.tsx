@@ -2,8 +2,12 @@
 
 import {Show, SignUpButton} from '@clerk/nextjs'
 import {CheckoutButton} from '@clerk/nextjs/experimental'
+import {Check} from 'lucide-react'
 import {useState} from 'react'
 
+import {Button} from '@/components/ui/Button'
+import {Card} from '@/components/ui/Card'
+import {Pill, Badge} from '@/components/ui/Pill'
 import type {BillingPlan} from '@/lib/billing'
 
 type Period = 'month' | 'annual'
@@ -30,9 +34,11 @@ export function PricingTable({
 
   if (plans.length === 0) {
     return (
-      <p className="rounded-xl border border-black/10 p-8 text-center text-sm text-black/60 dark:border-white/10 dark:text-white/60">
-        Plans aren&apos;t available right now. Please try again shortly.
-      </p>
+      <Card tone="plain" padding="lg" className="text-center">
+        <p className="text-sm text-ink-muted">
+          Plans aren&apos;t available right now. Please try again shortly.
+        </p>
+      </Card>
     )
   }
 
@@ -43,23 +49,19 @@ export function PricingTable({
           <div
             role="radiogroup"
             aria-label="Billing period"
-            className="flex gap-1 rounded-full bg-black/5 p-1 text-sm font-medium dark:bg-white/10"
+            className="flex gap-2"
           >
             {(['month', 'annual'] as const).map((value) => (
-              <button
+              <Pill
                 key={value}
-                type="button"
+                as="button"
+                active={period === value}
                 role="radio"
                 aria-checked={period === value}
                 onClick={() => setPeriod(value)}
-                className={`rounded-full px-4 py-1.5 transition-colors ${
-                  period === value
-                    ? 'bg-foreground text-background'
-                    : 'text-black/60 hover:text-foreground dark:text-white/60'
-                }`}
               >
                 {value === 'month' ? 'Monthly' : 'Annual'}
-              </button>
+              </Pill>
             ))}
           </div>
         </div>
@@ -76,7 +78,7 @@ export function PricingTable({
         ))}
       </div>
 
-      <p className="mt-6 text-center text-xs text-black/45 dark:text-white/45">
+      <p className="mt-6 text-center text-xs text-ink-faint">
         Ticket purchases are simulated in this demo. PRO membership uses Stripe test mode — card{' '}
         <span className="font-mono">4242 4242 4242 4242</span> works.
       </p>
@@ -107,72 +109,62 @@ function PlanCard({
       ]
     : [...BASELINE_PERKS, 'Seat selection charged per seat']
 
-  return (
-    <div
-      className={`relative flex flex-col rounded-2xl border p-6 ${
-        highlighted
-          ? 'border-blue-500/40 bg-blue-50/40 dark:border-blue-400/30 dark:bg-blue-950/20'
-          : 'border-black/10 dark:border-white/10'
-      }`}
-    >
-      {highlighted && !isCurrent && (
-        <span className="absolute -top-2.5 right-6 rounded-full bg-blue-600 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-          Best value
-        </span>
-      )}
-      {isCurrent && (
-        <span className="absolute -top-2.5 right-6 rounded-full bg-foreground px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-background">
-          Current plan
-        </span>
-      )}
+  const cardContent = (
+    <div className="flex flex-col">
+      <div className="relative">
+        {highlighted && !isCurrent && (
+          <span className="absolute -top-4 right-0 bg-gradient-brand px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-on-accent rounded-full">
+            Best value
+          </span>
+        )}
+        {isCurrent && (
+          <Badge tone="accent" className="absolute -top-4 right-0">
+            Current plan
+          </Badge>
+        )}
+      </div>
 
-      <p className="text-sm font-semibold uppercase tracking-wide">{plan.name}</p>
+      <p className="font-display text-ink uppercase text-xs font-semibold tracking-wide">{plan.name}</p>
 
       <div className="mt-3 flex items-baseline gap-1">
-        <span className="text-4xl font-semibold tracking-tight">
+        <span className="font-display text-5xl font-semibold text-ink">
           {plan.currencySymbol}
           {isPaid ? formatted : '0'}
         </span>
-        <span className="text-sm text-black/50 dark:text-white/50">
+        <span className="text-sm text-ink-muted">
           {isPaid ? '/month' : 'always free'}
         </span>
       </div>
 
       {isPaid && period === 'annual' && savesAnnually && (
-        <p className="mt-1 text-xs text-blue-600 dark:text-blue-400">
+        <p className="mt-1 text-xs text-accent-600">
           Billed annually — {plan.currencySymbol}
           {plan.monthlyFormatted}/month if you pay monthly.
         </p>
       )}
 
       {plan.description && (
-        <p className="mt-3 text-sm text-black/60 dark:text-white/60">{plan.description}</p>
+        <p className="mt-3 text-sm text-ink-muted">{plan.description}</p>
       )}
 
       <ul className="mt-6 flex flex-1 flex-col gap-3 text-sm">
         {perks.map((perk) => (
           <li key={perk} className="flex gap-2.5">
-            <CheckIcon />
-            <span className="text-black/70 dark:text-white/70">{perk}</span>
+            <Check className="size-4 shrink-0 text-accent-600" strokeWidth={2.5} />
+            <span className="text-ink-muted">{perk}</span>
           </li>
         ))}
       </ul>
 
       <div className="mt-8">
         {isCurrent ? (
-          <button
-            disabled
-            className="w-full cursor-default rounded-full border border-black/10 px-5 py-2.5 text-sm font-semibold text-black/50 dark:border-white/15 dark:text-white/50"
-          >
+          <Button variant="outline" disabled className="w-full">
             Your current plan
-          </button>
+          </Button>
         ) : !isPaid ? (
-          <button
-            disabled
-            className="w-full cursor-default rounded-full border border-black/10 px-5 py-2.5 text-sm font-semibold text-black/50 dark:border-white/15 dark:text-white/50"
-          >
+          <Button variant="outline" disabled className="w-full">
             Included by default
-          </button>
+          </Button>
         ) : (
           <>
             <Show when="signed-in">
@@ -182,16 +174,16 @@ function PlanCard({
                 for="user"
                 newSubscriptionRedirectUrl="/concierge"
               >
-                <button className="w-full rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90">
+                <Button variant="primary" size="lg" className="w-full">
                   Upgrade to {plan.name}
-                </button>
+                </Button>
               </CheckoutButton>
             </Show>
             <Show when="signed-out">
               <SignUpButton mode="modal">
-                <button className="w-full rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90">
+                <Button variant="primary" size="lg" className="w-full">
                   Sign up to get {plan.name}
-                </button>
+                </Button>
               </SignUpButton>
             </Show>
           </>
@@ -199,21 +191,21 @@ function PlanCard({
       </div>
     </div>
   )
-}
 
-function CheckIcon() {
+  if (highlighted) {
+    return (
+      <div className="rounded-card bg-gradient-brand p-px shadow-float">
+        <div className="rounded-[calc(1.5rem-1px)] bg-surface p-8">
+          {cardContent}
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <svg
-      aria-hidden
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      className="mt-0.5 shrink-0 text-blue-600 dark:text-blue-400"
-    >
-      <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <Card tone="plain" padding="lg">
+      {cardContent}
+    </Card>
   )
 }
+

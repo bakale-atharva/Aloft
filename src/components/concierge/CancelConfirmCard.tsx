@@ -2,6 +2,7 @@
 
 import {useState} from 'react'
 
+import {Button} from '@/components/ui/Button'
 import {cancelBooking} from '@/app/actions/booking'
 
 export function CancelConfirmCard({pnr}: {pnr: string}) {
@@ -18,24 +19,29 @@ export function CancelConfirmCard({pnr}: {pnr: string}) {
   }
 
   return (
-    <div className="max-w-sm rounded-xl border border-black/10 p-4 text-sm dark:border-white/10">
-      <p className="mb-3 font-semibold">Cancel booking {pnr}?</p>
+    <div className="rounded-card border border-danger-border bg-danger-soft p-6">
+      <p className="mb-3 font-semibold text-ink">Cancel booking {pnr}?</p>
 
       {status === 'done' ? (
-        <p className="text-xs text-blue-600 dark:text-blue-400">Cancelled.</p>
+        <p className="text-sm text-success">Cancelled.</p>
       ) : status === 'error' ? (
-        <p className="text-xs text-red-600 dark:text-red-400">
+        <p className="text-sm text-danger">
           Couldn&apos;t cancel that booking — it may not belong to you.
         </p>
       ) : (
-        <button
-          type="button"
-          onClick={handleConfirm}
-          disabled={status === 'pending'}
-          className="w-full rounded-full border border-red-300 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/40"
-        >
-          {status === 'pending' ? 'Cancelling…' : 'Confirm cancellation'}
-        </button>
+        <div className="flex gap-2">
+          <Button
+            variant="danger"
+            onClick={handleConfirm}
+            disabled={status === 'pending'}
+            className="flex-1"
+          >
+            {status === 'pending' ? 'Cancelling…' : 'Confirm cancellation'}
+          </Button>
+          <Button variant="ghost" disabled={status === 'pending'} className="flex-1">
+            Dismiss
+          </Button>
+        </div>
       )}
     </div>
   )
