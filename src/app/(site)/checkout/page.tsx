@@ -4,6 +4,7 @@ import {redirect} from 'next/navigation'
 import {client} from '@/sanity/client'
 import {FLIGHT_BY_ID_QUERY} from '@/sanity/queries'
 import {CheckoutForm} from '@/components/checkout/CheckoutForm'
+import {Card} from '@/components/ui/Card'
 import {getEntitlements} from '@/lib/entitlements'
 import {calculateFare} from '@/lib/pricing'
 import type {CabinClass} from '@/lib/seat-map'
@@ -42,14 +43,16 @@ export default async function CheckoutPage({
 
   if (!outboundFlightId || !outboundSeats) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-16 text-center">
-        <p className="text-black/60 dark:text-white/60">
-          Missing booking details.{' '}
-          <Link href="/" className="underline">
-            Start a new search
-          </Link>
-          .
-        </p>
+      <div className="mx-auto max-w-2xl px-6 py-16">
+        <Card tone="plain" padding="lg" className="text-center">
+          <p className="text-ink-muted">
+            Missing booking details.{' '}
+            <Link href="/" className="underline">
+              Start a new search
+            </Link>
+            .
+          </p>
+        </Card>
       </div>
     )
   }
@@ -64,14 +67,16 @@ export default async function CheckoutPage({
 
   if (flights.some((f) => !f)) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-16 text-center">
-        <p className="text-black/60 dark:text-white/60">
-          One of the selected flights could not be found.{' '}
-          <Link href="/" className="underline">
-            Start a new search
-          </Link>
-          .
-        </p>
+      <div className="mx-auto max-w-2xl px-6 py-16">
+        <Card tone="plain" padding="lg" className="text-center">
+          <p className="text-ink-muted">
+            One of the selected flights could not be found.{' '}
+            <Link href="/" className="underline">
+              Start a new search
+            </Link>
+            .
+          </p>
+        </Card>
       </div>
     )
   }
@@ -120,20 +125,21 @@ export default async function CheckoutPage({
 
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-10">
-      <h1 className="mb-6 text-2xl font-semibold tracking-tight">Checkout</h1>
-      <div className="mb-8 flex flex-col gap-2">
-        {flights.map((flight, i) => {
-          const f = flight as FlightResult
-          return (
-            <p key={f._id} className="text-sm text-black/60 dark:text-white/60">
-              {i === 0 && inboundFlightId ? 'Outbound' : i === 1 ? 'Return' : 'Flight'} ·{' '}
-              {f.origin.code} → {f.destination.code} · {f.flightNumber} ·{' '}
-              {(cabinClass as CabinClass).replace(/^\w/, (c) => c.toUpperCase())} · Seats{' '}
-              {legSeatIds[i].join(', ')}
-            </p>
-          )
-        })}
-      </div>
+      <h1 className="mb-6 font-display text-ink">Checkout</h1>
+      <Card tone="plain" padding="sm" className="mb-8">
+        <div className="flex flex-col gap-2">
+          {flights.map((flight, i) => {
+            const f = flight as FlightResult
+            return (
+              <p key={f._id} className="text-sm">
+                <span className="font-display text-ink">{i === 0 && inboundFlightId ? 'Outbound' : i === 1 ? 'Return' : 'Flight'}</span>
+                {' '}·{' '}
+                <span className="text-ink-muted">{f.origin.code} → {f.destination.code} · {f.flightNumber} · {(cabinClass as CabinClass).replace(/^\w/, (c) => c.toUpperCase())} · Seats {legSeatIds[i].join(', ')}</span>
+              </p>
+            )
+          })}
+        </div>
+      </Card>
       <CheckoutForm
         hidden={hidden}
         passengers={passengers}

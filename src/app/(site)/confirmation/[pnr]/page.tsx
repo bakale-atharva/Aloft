@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
+import {Check} from 'lucide-react'
 
 import {client} from '@/sanity/client'
 import {BOOKING_BY_PNR_QUERY} from '@/sanity/queries'
+import {buttonClass} from '@/components/ui/Button'
 import {getEntitlements} from '@/lib/entitlements'
 import type {FlightResult} from '@/lib/types'
 
@@ -62,73 +64,80 @@ export default async function ConfirmationPage({
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-10">
       <div className="mb-8 text-center">
-        <p className="text-sm font-medium uppercase tracking-wide text-blue-600 dark:text-blue-400">
+        <div className="mb-4 flex justify-center">
+          <span className="grid size-12 place-items-center rounded-full bg-success-soft text-success">
+            <Check className="size-6" strokeWidth={2.5} />
+          </span>
+        </div>
+        <p className="text-sm font-medium uppercase tracking-wide text-success">
           Booking confirmed
         </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight">{booking.pnr}</h1>
-        <p className="mt-1 text-sm text-black/50 dark:text-white/50">
+        <h1 className="mt-2 font-display text-6xl font-semibold tracking-tight text-ink">{booking.pnr}</h1>
+        <p className="mt-1 text-xs uppercase tracking-[0.08em] text-ink-faint">
           Confirmation sent to {booking.contactEmail}
         </p>
       </div>
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-black/10 p-6 dark:border-white/10">
-        {legs.map((leg, i) => (
-          <div
-            key={leg.flight._id}
-            className={i > 0 ? 'border-t border-black/10 pt-4 dark:border-white/10' : ''}
-          >
-            <p className="text-xs uppercase tracking-wide text-black/50 dark:text-white/50">
-              {i === 0 && legs.length > 1 ? 'Outbound' : legs.length > 1 ? 'Return' : 'Flight'}
-            </p>
-            <div className="mt-1 flex items-center justify-between">
-              <div>
-                <p className="text-lg font-semibold">
-                  {leg.flight.origin.code} → {leg.flight.destination.code}
-                </p>
-                <p className="text-sm text-black/60 dark:text-white/60">
-                  {leg.flight.airline.name} {leg.flight.flightNumber} · {leg.cabinClass}
-                </p>
+      <div className="relative rounded-card border border-border bg-surface-2 p-8 shadow-card before:absolute before:-left-3 before:top-1/2 before:size-6 before:-translate-y-1/2 before:rounded-full before:bg-canvas after:absolute after:-right-3 after:top-1/2 after:size-6 after:-translate-y-1/2 after:rounded-full after:bg-canvas">
+        <div className="flex flex-col gap-4">
+          {legs.map((leg, i) => (
+            <div
+              key={leg.flight._id}
+              className={i > 0 ? 'border-t border-dashed border-border pt-4' : ''}
+            >
+              <p className="text-xs uppercase tracking-wide text-ink-faint">
+                {i === 0 && legs.length > 1 ? 'Outbound' : legs.length > 1 ? 'Return' : 'Flight'}
+              </p>
+              <div className="mt-1 flex items-center justify-between">
+                <div>
+                  <p className="font-display text-ink">
+                    {leg.flight.origin.code} → {leg.flight.destination.code}
+                  </p>
+                  <p className="text-sm text-ink-muted">
+                    {leg.flight.airline.name} {leg.flight.flightNumber} · {leg.cabinClass}
+                  </p>
+                </div>
+                <div className="text-right text-sm">
+                  <p className="font-display text-ink">{formatTime(leg.flight.departureTime, leg.flight.origin.timezone)}</p>
+                  <p className="text-ink-muted">
+                    → {formatTime(leg.flight.arrivalTime, leg.flight.destination.timezone)}
+                  </p>
+                </div>
               </div>
-              <div className="text-right text-sm">
-                <p>{formatTime(leg.flight.departureTime, leg.flight.origin.timezone)}</p>
-                <p className="text-black/50 dark:text-white/50">
-                  → {formatTime(leg.flight.arrivalTime, leg.flight.destination.timezone)}
-                </p>
-              </div>
+              <p className="mt-2 text-sm text-ink-muted">
+                Seats: {leg.seats.map((s) => `${s.seatNumber} (${s.passengerName})`).join(', ')}
+              </p>
             </div>
-            <p className="mt-2 text-sm text-black/60 dark:text-white/60">
-              Seats: {leg.seats.map((s) => `${s.seatNumber} (${s.passengerName})`).join(', ')}
-            </p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className="mt-6 rounded-2xl border border-black/10 p-6 dark:border-white/10">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-black/50 dark:text-white/50">
-          Passengers
-        </h2>
-        <p className="text-sm">{booking.passengers.map((p) => p.fullName).join(', ')}</p>
+        <div className="mt-6 border-t border-dashed border-border pt-6">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+            Passengers
+          </h2>
+          <p className="text-sm text-ink">{booking.passengers.map((p) => p.fullName).join(', ')}</p>
 
-        <h2 className="mb-3 mt-6 text-sm font-semibold uppercase tracking-wide text-black/50 dark:text-white/50">
-          Payment
-        </h2>
-        <p className="text-sm">
-          Card ending {booking.payment.last4} · {booking.fareBreakdown.currency} $
-          {booking.fareBreakdown.total}
-          {booking.proSeatFeesWaived && ' (seat fees waived, PRO)'}
-        </p>
+          <h2 className="mb-3 mt-6 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+            Payment
+          </h2>
+          <p className="text-sm text-ink">
+            Card ending {booking.payment.last4} · {booking.fareBreakdown.currency} $
+            {booking.fareBreakdown.total}
+            {booking.proSeatFeesWaived && ' (seat fees waived, PRO)'}
+          </p>
+        </div>
       </div>
 
       <div className="mt-8 flex justify-center gap-4">
         <Link
           href="/bookings"
-          className="rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background hover:opacity-90"
+          className={buttonClass({variant: 'primary'})}
         >
           View my bookings
         </Link>
         <Link
           href="/"
-          className="rounded-full border border-black/10 px-6 py-3 text-sm font-semibold hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10"
+          className={buttonClass({variant: 'outline'})}
         >
           Book another flight
         </Link>

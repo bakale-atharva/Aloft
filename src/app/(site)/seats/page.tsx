@@ -1,7 +1,10 @@
 import Link from 'next/link'
 
+import {Plane} from 'lucide-react'
+
 import {client} from '@/sanity/client'
 import {FLIGHT_BY_ID_QUERY, OCCUPIED_SEATS_QUERY} from '@/sanity/queries'
+import {Card} from '@/components/ui/Card'
 import {SeatSelectionFlow} from '@/components/seat-map/SeatSelectionFlow'
 import {getEntitlements} from '@/lib/entitlements'
 import type {CabinClass} from '@/lib/seat-map'
@@ -30,14 +33,17 @@ export default async function SeatsPage({
 
   if (!outboundFlightId) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-16 text-center">
-        <p className="text-black/60 dark:text-white/60">
-          No flight selected.{' '}
-          <Link href="/" className="underline">
-            Start a new search
-          </Link>
-          .
-        </p>
+      <div className="mx-auto max-w-2xl px-6 py-16">
+        <Card tone="plain" padding="lg" className="text-center">
+          <Plane className="mx-auto mb-3 size-8 text-ink-faint" aria-hidden />
+          <p className="text-ink-muted">
+            No flight selected.{' '}
+            <Link href="/" className="font-medium text-accent-600 underline">
+              Start a new search
+            </Link>
+            .
+          </p>
+        </Card>
       </div>
     )
   }
@@ -62,14 +68,17 @@ export default async function SeatsPage({
   const missing = flights.some((f) => !f)
   if (missing) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-16 text-center">
-        <p className="text-black/60 dark:text-white/60">
-          One of the selected flights could not be found.{' '}
-          <Link href="/" className="underline">
-            Start a new search
-          </Link>
-          .
-        </p>
+      <div className="mx-auto max-w-2xl px-6 py-16">
+        <Card tone="plain" padding="lg" className="text-center">
+          <Plane className="mx-auto mb-3 size-8 text-ink-faint" aria-hidden />
+          <p className="text-ink-muted">
+            One of the selected flights could not be found.{' '}
+            <Link href="/" className="font-medium text-accent-600 underline">
+              Start a new search
+            </Link>
+            .
+          </p>
+        </Card>
       </div>
     )
   }
@@ -91,7 +100,7 @@ export default async function SeatsPage({
 
   return (
     <div className="mx-auto w-full max-w-4xl px-6 py-10">
-      <h1 className="mb-6 text-2xl font-semibold tracking-tight">Choose your seats</h1>
+      <h1 className="mb-6 font-display text-2xl font-semibold tracking-tight text-ink">Choose your seats</h1>
       <SeatSelectionFlow
         legs={legs}
         passengers={passengers}

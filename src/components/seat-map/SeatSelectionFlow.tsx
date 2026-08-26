@@ -4,6 +4,7 @@ import Link from 'next/link'
 import {useMemo, useState} from 'react'
 
 import {SeatMap} from './SeatMap'
+import {buttonClass} from '@/components/ui/Button'
 import {calculateFare} from '@/lib/pricing'
 import type {CabinClass} from '@/lib/seat-map'
 import type {FlightResult} from '@/lib/types'
@@ -65,16 +66,16 @@ export function SeatSelectionFlow({
         {legs.map((leg, i) => (
           <div key={leg.flight._id}>
             <div className="mb-4">
-              <p className="text-xs uppercase tracking-wide text-black/50 dark:text-white/50">
+              <p className="text-xs uppercase tracking-wide text-ink-muted">
                 {leg.label}
               </p>
-              <h2 className="text-lg font-semibold">
+              <h2 className="font-display text-ink">
                 {leg.flight.origin.code} → {leg.flight.destination.code}{' '}
-                <span className="font-normal text-black/50 dark:text-white/50">
+                <span className="font-normal text-ink-muted">
                   · {leg.flight.flightNumber} · {leg.cabinClass}
                 </span>
               </h2>
-              <p className="text-sm text-black/50 dark:text-white/50">
+              <p className="text-sm text-ink-muted">
                 Select {passengers} seat{passengers > 1 ? 's' : ''} ({selections[i].length}/{passengers} chosen)
               </p>
             </div>
@@ -99,30 +100,30 @@ export function SeatSelectionFlow({
         ))}
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 border-t border-black/10 bg-background/95 backdrop-blur-sm dark:border-white/10">
+      <div className="sticky bottom-0 border-t border-border bg-surface/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-6 py-4">
           <div>
-            <p className="text-sm text-black/50 dark:text-white/50">
+            <p className="font-display text-lg text-ink">
               {fareBreakdown.currency} ${fareBreakdown.total}
               {fareBreakdown.seatFees > 0 && (
                 <span className="ml-1 text-xs">(incl. ${fareBreakdown.seatFees} seat fees)</span>
               )}
             </p>
-            <p className="text-xs text-black/40 dark:text-white/40">
+            <p className="text-xs text-ink-muted">
               {passengers} passenger{passengers > 1 ? 's' : ''} · taxes included
             </p>
           </div>
           {allComplete ? (
             <Link
               href={checkoutHref}
-              className="rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background hover:opacity-90"
+              className={buttonClass({variant: 'primary'})}
             >
               Continue to checkout
             </Link>
           ) : (
             <button
               disabled
-              className="cursor-not-allowed rounded-full bg-black/10 px-6 py-3 text-sm font-semibold text-black/40 dark:bg-white/10 dark:text-white/40"
+              className={buttonClass({variant: 'primary', className: 'disabled:cursor-not-allowed disabled:opacity-50'})}
             >
               Continue to checkout
             </button>

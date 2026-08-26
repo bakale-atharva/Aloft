@@ -1,9 +1,12 @@
 import Link from 'next/link'
 import {redirect} from 'next/navigation'
+import {Plane, Sparkles} from 'lucide-react'
 
 import {client} from '@/sanity/client'
 import {MY_BOOKINGS_QUERY} from '@/sanity/queries'
 import {CancelButton} from '@/components/bookings/CancelButton'
+import {Badge} from '@/components/ui/Pill'
+import {Card} from '@/components/ui/Card'
 import {getEntitlements} from '@/lib/entitlements'
 import type {FlightResult} from '@/lib/types'
 
@@ -34,10 +37,10 @@ function formatDate(iso: string, timezone: string) {
   }).format(new Date(iso))
 }
 
-const STATUS_STYLES: Record<Booking['status'], string> = {
-  confirmed: 'text-blue-600 dark:text-blue-400',
-  pending: 'text-amber-600 dark:text-amber-400',
-  cancelled: 'text-black/40 dark:text-white/40',
+const STATUS_TONES: Record<Booking['status'], 'success' | 'warning' | 'neutral'> = {
+  confirmed: 'success',
+  pending: 'warning',
+  cancelled: 'neutral',
 }
 
 export default async function BookingsPage() {
@@ -54,42 +57,43 @@ export default async function BookingsPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-6 py-10">
-      <h1 className="mb-6 text-2xl font-semibold tracking-tight">My bookings</h1>
+      <h1 className="mb-6 font-display text-ink">My bookings</h1>
 
       {bookings.length === 0 ? (
-        <p className="rounded-xl border border-black/10 p-8 text-center text-black/60 dark:border-white/10 dark:text-white/60">
-          No bookings yet.{' '}
-          <Link href="/" className="underline">
-            Search flights
-          </Link>
-          .
-        </p>
+        <Card tone="plain" padding="lg" className="text-center">
+          <Plane className="mx-auto mb-4 size-8 text-ink-faint" />
+          <p className="text-ink-muted">
+            No bookings yet.{' '}
+            <Link href="/" className="underline">
+              Search flights
+            </Link>
+            .
+          </p>
+        </Card>
       ) : (
         <div className="flex flex-col gap-4">
           {bookings.map((booking) => (
-            <div
-              key={booking._id}
-              className="rounded-xl border border-black/10 p-5 dark:border-white/10"
-            >
+            <Card key={booking._id} tone="raised" padding="md">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold">{booking.pnr}</p>
-                    <span className={`text-xs font-medium uppercase ${STATUS_STYLES[booking.status]}`}>
+                    <p className="font-display text-ink">{booking.pnr}</p>
+                    <Badge tone={STATUS_TONES[booking.status]}>
                       {booking.status}
-                    </span>
+                    </Badge>
                     {booking.bookedVia === 'concierge' && (
-                      <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-black/50 dark:bg-white/10 dark:text-white/50">
+                      <Badge tone="accent">
+                        <Sparkles className="size-3" />
                         via concierge
-                      </span>
+                      </Badge>
                     )}
                   </div>
-                  <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+                  <p className="mt-1 text-sm text-ink-muted">
                     {booking.outbound.flight.origin.code} → {booking.outbound.flight.destination.code}
                     {booking.inbound &&
                       ` · ${booking.inbound.flight.origin.code} → ${booking.inbound.flight.destination.code}`}
                   </p>
-                  <p className="text-xs text-black/50 dark:text-white/50">
+                  <p className="text-xs text-ink-muted">
                     {formatDate(
                       booking.outbound.flight.departureTime,
                       booking.outbound.flight.origin.timezone,
@@ -100,13 +104,13 @@ export default async function BookingsPage() {
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-2">
-                  <p className="text-sm font-semibold">
+                  <p className="font-display text-ink">
                     {booking.fareBreakdown.currency} ${booking.fareBreakdown.total}
                   </p>
                   {booking.status !== 'cancelled' && <CancelButton pnr={booking.pnr} />}
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
