@@ -3,6 +3,8 @@
 import {useRouter} from 'next/navigation'
 import {useState} from 'react'
 
+import {PassengerStepper} from './PassengerStepper'
+
 type Airport = {_id: string; code: string; name: string; city: string; country: string}
 
 const CABIN_CLASSES = [
@@ -138,14 +140,7 @@ export function SearchForm({airports}: {airports: Airport[]}) {
 
         <div className="grid grid-cols-2 gap-4 lg:col-span-4">
           <Field label="Passengers">
-            <input
-              type="number"
-              min={1}
-              max={9}
-              value={passengers}
-              onChange={(e) => setPassengers(Math.min(9, Math.max(1, Number(e.target.value))))}
-              className={inputClass}
-            />
+            <PassengerStepper value={passengers} onChange={setPassengers} />
           </Field>
           <Field label="Class">
             <select

@@ -96,6 +96,37 @@ export const BOOKING_BY_PNR_QUERY = defineQuery(
   }`,
 )
 
+/**
+ * Cheapest upcoming economy fare per route, for the landing page's grid.
+ * `departureTime` comes back so each card can link at a date that actually
+ * has a flight rather than an arbitrary offset from today.
+ */
+export const POPULAR_ROUTES_QUERY = defineQuery(
+  `*[_type == "flight" && status == "scheduled" && departureTime > now()]{
+    "originCode": origin->code,
+    "originCity": origin->city,
+    "destinationCode": destination->code,
+    "destinationCity": destination->city,
+    "fromPrice": fares[cabinClass == "economy"][0].basePrice,
+    "currency": fares[cabinClass == "economy"][0].currency,
+    durationMinutes,
+    departureTime,
+  }[defined(fromPrice)] | order(fromPrice asc)`,
+)
+
+export const LANDING_STATS_QUERY = defineQuery(
+  `{
+    "airports": count(*[_type == "airport"]),
+    "airlines": count(*[_type == "airline"]),
+    "flights": count(*[_type == "flight" && status == "scheduled"]),
+  }`,
+)
+
+export const FAQ_PREVIEW_QUERY = defineQuery(
+  `*[_type == "supportArticle" && category in ["seats", "baggage", "pro", "payments"]]
+    | order(category asc)[0...6]{_id, question, category}`,
+)
+
 export const SUPPORT_ARTICLES_QUERY = defineQuery(
   `*[_type == "supportArticle"] | order(category asc) {_id, question, category, answer}`,
 )

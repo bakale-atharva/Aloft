@@ -3,6 +3,7 @@ import Link from 'next/link'
 import {client} from '@/sanity/client'
 import {SEARCH_FLIGHTS_QUERY} from '@/sanity/queries'
 import {FlightCard} from '@/components/flight-card/FlightCard'
+import {SearchRefineBar} from '@/components/search-form/SearchRefineBar'
 import type {CabinClass} from '@/lib/seat-map'
 import type {FlightResult} from '@/lib/types'
 
@@ -124,6 +125,8 @@ export default async function SearchPage({
           })}
         </p>
       </div>
+
+      <SearchRefineBar passengers={passengers} cabinClass={cabinClass as CabinClass} />
 
       {flights.length === 0 ? (
         <p className="rounded-xl border border-black/10 p-8 text-center text-black/60 dark:border-white/10 dark:text-white/60">

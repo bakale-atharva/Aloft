@@ -772,6 +772,39 @@ export type BOOKING_BY_PNR_QUERY_RESULT = {
 } | null;
 
 // Source: src/sanity/queries.ts
+// Variable: POPULAR_ROUTES_QUERY
+// Query: *[_type == "flight" && status == "scheduled" && departureTime > now()]{    "originCode": origin->code,    "originCity": origin->city,    "destinationCode": destination->code,    "destinationCity": destination->city,    "fromPrice": fares[cabinClass == "economy"][0].basePrice,    "currency": fares[cabinClass == "economy"][0].currency,    durationMinutes,    departureTime,  }[defined(fromPrice)] | order(fromPrice asc)
+export type POPULAR_ROUTES_QUERY_RESULT = Array<{
+  originCode: string | null;
+  originCity: string | null;
+  destinationCode: string | null;
+  destinationCity: string | null;
+  fromPrice: number;
+  currency: string | null;
+  durationMinutes: number | null;
+  departureTime: string | null;
+}>;
+
+// Source: src/sanity/queries.ts
+// Variable: LANDING_STATS_QUERY
+// Query: {    "airports": count(*[_type == "airport"]),    "airlines": count(*[_type == "airline"]),    "flights": count(*[_type == "flight" && status == "scheduled"]),  }
+export type LANDING_STATS_QUERY_RESULT = {
+  airports: number;
+  airlines: number;
+  flights: number;
+};
+
+// Source: src/sanity/queries.ts
+// Variable: FAQ_PREVIEW_QUERY
+// Query: *[_type == "supportArticle" && category in ["seats", "baggage", "pro", "payments"]]    | order(category asc)[0...6]{_id, question, category}
+export type FAQ_PREVIEW_QUERY_RESULT = Array<{
+  _id: string;
+  question: string | null;
+  category:
+    "baggage" | "changes" | "checkin" | "payments" | "pro" | "seats" | null;
+}>;
+
+// Source: src/sanity/queries.ts
 // Variable: SUPPORT_ARTICLES_QUERY
 // Query: *[_type == "supportArticle"] | order(category asc) {_id, question, category, answer}
 export type SUPPORT_ARTICLES_QUERY_RESULT = Array<{
@@ -809,6 +842,9 @@ declare module "@sanity/client" {
     '*[\n    _type == "booking" &&\n    status != "cancelled" &&\n    (outbound.flight._ref == $flightId || inbound.flight._ref == $flightId)\n  ]{\n    "seats": select(\n      outbound.flight._ref == $flightId => outbound.seats[].seatNumber,\n      inbound.flight._ref == $flightId => inbound.seats[].seatNumber,\n    )\n  }.seats[]': OCCUPIED_SEATS_QUERY_RESULT;
     '*[_type == "booking" && clerkUserId == $clerkUserId] | order(_createdAt desc) {\n    _id,\n    pnr,\n    tripType,\n    status,\n    fareBreakdown,\n    bookedVia,\n    _createdAt,\n    outbound{\n      cabinClass,\n      seats,\n      flight->{\n  _id,\n  flightNumber,\n  departureTime,\n  arrivalTime,\n  durationMinutes,\n  fares,\n  status,\n  airline->{_id, name, code},\n  aircraft->{_id, model, seatLayout},\n  origin->{_id, code, name, city, timezone},\n  destination->{_id, code, name, city, timezone},\n}\n    },\n    inbound{\n      cabinClass,\n      seats,\n      flight->{\n  _id,\n  flightNumber,\n  departureTime,\n  arrivalTime,\n  durationMinutes,\n  fares,\n  status,\n  airline->{_id, name, code},\n  aircraft->{_id, model, seatLayout},\n  origin->{_id, code, name, city, timezone},\n  destination->{_id, code, name, city, timezone},\n}\n    }\n  }': MY_BOOKINGS_QUERY_RESULT;
     '*[_type == "booking" && pnr == $pnr][0]{\n    _id,\n    pnr,\n    clerkUserId,\n    contactName,\n    contactEmail,\n    tripType,\n    status,\n    fareBreakdown,\n    proSeatFeesWaived,\n    payment,\n    passengers,\n    bookedVia,\n    outbound{\n      cabinClass,\n      seats,\n      flight->{\n  _id,\n  flightNumber,\n  departureTime,\n  arrivalTime,\n  durationMinutes,\n  fares,\n  status,\n  airline->{_id, name, code},\n  aircraft->{_id, model, seatLayout},\n  origin->{_id, code, name, city, timezone},\n  destination->{_id, code, name, city, timezone},\n}\n    },\n    inbound{\n      cabinClass,\n      seats,\n      flight->{\n  _id,\n  flightNumber,\n  departureTime,\n  arrivalTime,\n  durationMinutes,\n  fares,\n  status,\n  airline->{_id, name, code},\n  aircraft->{_id, model, seatLayout},\n  origin->{_id, code, name, city, timezone},\n  destination->{_id, code, name, city, timezone},\n}\n    }\n  }': BOOKING_BY_PNR_QUERY_RESULT;
+    '*[_type == "flight" && status == "scheduled" && departureTime > now()]{\n    "originCode": origin->code,\n    "originCity": origin->city,\n    "destinationCode": destination->code,\n    "destinationCity": destination->city,\n    "fromPrice": fares[cabinClass == "economy"][0].basePrice,\n    "currency": fares[cabinClass == "economy"][0].currency,\n    durationMinutes,\n    departureTime,\n  }[defined(fromPrice)] | order(fromPrice asc)': POPULAR_ROUTES_QUERY_RESULT;
+    '{\n    "airports": count(*[_type == "airport"]),\n    "airlines": count(*[_type == "airline"]),\n    "flights": count(*[_type == "flight" && status == "scheduled"]),\n  }': LANDING_STATS_QUERY_RESULT;
+    '*[_type == "supportArticle" && category in ["seats", "baggage", "pro", "payments"]]\n    | order(category asc)[0...6]{_id, question, category}': FAQ_PREVIEW_QUERY_RESULT;
     '*[_type == "supportArticle"] | order(category asc) {_id, question, category, answer}': SUPPORT_ARTICLES_QUERY_RESULT;
   }
 }
