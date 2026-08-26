@@ -51,6 +51,20 @@ type RawPlan = {
  * so the cards can match the rest of the site. Checkout itself still goes
  * through Clerk's drawer via `<CheckoutButton />`.
  */
+/**
+ * Which plan the viewer is on. Signed-in users with no subscription are on
+ * the instance's default (free) plan, not on "no plan" — signed-out visitors
+ * get null so nothing is marked as theirs.
+ */
+export function resolveCurrentPlanSlug(
+  plans: BillingPlan[],
+  {userId, isPro}: {userId: string | null; isPro: boolean},
+): string | null {
+  if (!userId) return null
+  if (isPro) return 'pro'
+  return plans.find((plan) => plan.isDefault)?.slug ?? null
+}
+
 export async function getUserPlans(): Promise<BillingPlan[]> {
   const secretKey = process.env.CLERK_SECRET_KEY
   if (!secretKey) return []

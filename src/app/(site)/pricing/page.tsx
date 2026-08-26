@@ -1,9 +1,10 @@
 import {PricingTable} from '@/components/pricing/PricingTable'
-import {getUserPlans} from '@/lib/billing'
+import {getUserPlans, resolveCurrentPlanSlug} from '@/lib/billing'
 import {getEntitlements} from '@/lib/entitlements'
 
 export default async function PricingPage() {
-  const [plans, {isPro}] = await Promise.all([getUserPlans(), getEntitlements()])
+  const [plans, {userId, isPro}] = await Promise.all([getUserPlans(), getEntitlements()])
+  const currentPlanSlug = resolveCurrentPlanSlug(plans, {userId, isPro})
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-6 py-16">
@@ -14,7 +15,7 @@ export default async function PricingPage() {
         </p>
       </div>
 
-      <PricingTable plans={plans} currentPlanSlug={isPro ? 'pro' : null} />
+      <PricingTable plans={plans} currentPlanSlug={currentPlanSlug} />
     </div>
   )
 }
