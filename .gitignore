@@ -52,4 +52,4 @@ next-env.d.ts
 # agent skill references (installed via `skills add`)
 /.agents
 /agent
-/.claude/skills
+/.claude/
